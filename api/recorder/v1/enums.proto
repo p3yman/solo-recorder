@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package recorder.v1;
+
+option go_package = "github.com/p3yman/solo-recorder/pkg/api/recorder/v1";
+
+enum RecordingStatus {
+  RECORDING_STATUS_UNSPECIFIED = 0;  
+  RECORDING_STATUS_IDLE = 1;        
+  RECORDING_STATUS_RECORDING = 2;   
+  RECORDING_STATUS_PAUSED = 3;      
+  RECORDING_STATUS_STOPPED = 4;     
+  RECORDING_STATUS_SAVING = 5;      
+  RECORDING_STATUS_ERROR = 6;       
+}

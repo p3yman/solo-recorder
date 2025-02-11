@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package recorder.v1;
+
+import "recorder/v1/enums.proto";
+
+option go_package = "github.com/p3yman/solo-recorder/pkg/api/recorder/v1";
+
+service RecorderService {
+  // Start recording
+  rpc StartRecording(StartRecordingRequest) returns (StartRecordingResponse);
+
+  // Stop recording
+  rpc StopRecording(StopRecordingRequest) returns (StopRecordingResponse);
+
+  // Stream real-time status updates (mic level, file size, FPS, etc.)
+  rpc StreamStatus(StatusRequest) returns (stream StatusUpdate);
+}
+
+// Requests & Responses
+message StartRecordingRequest {
+  string resolution = 1; // "720p" | "1080p" | "4k"
+  int32 fps = 2;
+  string camera_id = 4;
+  string mic_id = 5;
+}
+
+message StartRecordingResponse {
+  string recording_id = 1;
+  RecordingStatus status = 2;
+}
+
+message StopRecordingRequest {
+  string recording_id = 1;
+}
+
+message StopRecordingResponse {
+  string file_path = 1;
+}
+
+message StatusRequest {}
+
+message StatusUpdate {
+  float mic_level = 1;  // 0-100
+  RecordingStatus recording_state = 2;
+  int32 fps = 3;
+  int64 file_size = 4; // Bytes
+}

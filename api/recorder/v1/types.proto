@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package recorder.v1;
+
+option go_package = "github.com/p3yman/solo-recorder/pkg/api/recorder/v1";
