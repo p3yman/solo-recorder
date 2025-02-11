@@ -51,7 +51,7 @@ type RecorderServiceClient interface {
 	// Stop recording
 	StopRecording(context.Context, *connect.Request[v1.StopRecordingRequest]) (*connect.Response[v1.StopRecordingResponse], error)
 	// Stream real-time status updates (mic level, file size, FPS, etc.)
-	StreamStatus(context.Context, *connect.Request[v1.StatusRequest]) (*connect.ServerStreamForClient[v1.StatusUpdate], error)
+	StreamStatus(context.Context, *connect.Request[v1.StreamStatusRequest]) (*connect.ServerStreamForClient[v1.StreamStatusResponse], error)
 }
 
 // NewRecorderServiceClient constructs a client for the recorder.v1.RecorderService service. By
@@ -77,7 +77,7 @@ func NewRecorderServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(recorderServiceMethods.ByName("StopRecording")),
 			connect.WithClientOptions(opts...),
 		),
-		streamStatus: connect.NewClient[v1.StatusRequest, v1.StatusUpdate](
+		streamStatus: connect.NewClient[v1.StreamStatusRequest, v1.StreamStatusResponse](
 			httpClient,
 			baseURL+RecorderServiceStreamStatusProcedure,
 			connect.WithSchema(recorderServiceMethods.ByName("StreamStatus")),
@@ -90,7 +90,7 @@ func NewRecorderServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 type recorderServiceClient struct {
 	startRecording *connect.Client[v1.StartRecordingRequest, v1.StartRecordingResponse]
 	stopRecording  *connect.Client[v1.StopRecordingRequest, v1.StopRecordingResponse]
-	streamStatus   *connect.Client[v1.StatusRequest, v1.StatusUpdate]
+	streamStatus   *connect.Client[v1.StreamStatusRequest, v1.StreamStatusResponse]
 }
 
 // StartRecording calls recorder.v1.RecorderService.StartRecording.
@@ -104,7 +104,7 @@ func (c *recorderServiceClient) StopRecording(ctx context.Context, req *connect.
 }
 
 // StreamStatus calls recorder.v1.RecorderService.StreamStatus.
-func (c *recorderServiceClient) StreamStatus(ctx context.Context, req *connect.Request[v1.StatusRequest]) (*connect.ServerStreamForClient[v1.StatusUpdate], error) {
+func (c *recorderServiceClient) StreamStatus(ctx context.Context, req *connect.Request[v1.StreamStatusRequest]) (*connect.ServerStreamForClient[v1.StreamStatusResponse], error) {
 	return c.streamStatus.CallServerStream(ctx, req)
 }
 
@@ -115,7 +115,7 @@ type RecorderServiceHandler interface {
 	// Stop recording
 	StopRecording(context.Context, *connect.Request[v1.StopRecordingRequest]) (*connect.Response[v1.StopRecordingResponse], error)
 	// Stream real-time status updates (mic level, file size, FPS, etc.)
-	StreamStatus(context.Context, *connect.Request[v1.StatusRequest], *connect.ServerStream[v1.StatusUpdate]) error
+	StreamStatus(context.Context, *connect.Request[v1.StreamStatusRequest], *connect.ServerStream[v1.StreamStatusResponse]) error
 }
 
 // NewRecorderServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -168,6 +168,6 @@ func (UnimplementedRecorderServiceHandler) StopRecording(context.Context, *conne
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("recorder.v1.RecorderService.StopRecording is not implemented"))
 }
 
-func (UnimplementedRecorderServiceHandler) StreamStatus(context.Context, *connect.Request[v1.StatusRequest], *connect.ServerStream[v1.StatusUpdate]) error {
+func (UnimplementedRecorderServiceHandler) StreamStatus(context.Context, *connect.Request[v1.StreamStatusRequest], *connect.ServerStream[v1.StreamStatusResponse]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("recorder.v1.RecorderService.StreamStatus is not implemented"))
 }

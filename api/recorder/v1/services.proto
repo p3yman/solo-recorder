@@ -14,7 +14,7 @@ service RecorderService {
   rpc StopRecording(StopRecordingRequest) returns (StopRecordingResponse);
 
   // Stream real-time status updates (mic level, file size, FPS, etc.)
-  rpc StreamStatus(StatusRequest) returns (stream StatusUpdate);
+  rpc StreamStatus(StreamStatusRequest) returns (stream StreamStatusResponse);
 }
 
 // Requests & Responses
@@ -38,9 +38,9 @@ message StopRecordingResponse {
   string file_path = 1;
 }
 
-message StatusRequest {}
+message StreamStatusRequest {}
 
-message StatusUpdate {
+message StreamStatusResponse {
   float mic_level = 1;  // 0-100
   RecordingStatus recording_state = 2;
   int32 fps = 3;
